@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import axios from "axios";
 
 const App = () => {
@@ -21,13 +21,20 @@ const App = () => {
     try {
       const response = await axios.request(options);
       console.log(response.data);
+      return response.data;
     } catch (error) {
       console.error(error);
     }
   };
 
+  const setDistance = async () => {
+    const distance = await getDistance("philadelphia", "detroit");
+    setDistanceTraveled(distance);
+    console.log("distance: ", distance.steps[0].distance.greatCircle);
+  };
+
   if (distanceTraveled === null) {
-    setDistanceTraveled(getDistance("philadelphia", "detroit"));
+    setDistance();
   }
 
   return (
@@ -36,7 +43,7 @@ const App = () => {
       {distanceTraveled && (
         <>
           <h2>You went this far!</h2>
-          {/* <p>{distanceTraveled[0].distance}</p> */}
+          <p>{distanceTraveled.steps[0].distance.greatCircle} Km</p>
         </>
       )}
     </div>
