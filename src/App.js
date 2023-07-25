@@ -1,25 +1,46 @@
-import logo from './logo.svg';
-import './App.css';
+import { useState } from "react";
+import axios from "axios";
 
-function App() {
+const App = () => {
+  const [distanceTraveled, setDistanceTraveled] = useState(null);
+
+  const getDistance = async (pointA, pointB) => {
+    const options = {
+      method: "GET",
+      url: "https://distanceto.p.rapidapi.com/get",
+      params: {
+        route: '[{"t":"' + pointA + '"},{"t":"' + pointB + '"}]',
+        car: "false",
+      },
+      headers: {
+        "X-RapidAPI-Key": "7d6eb9a0ffmshcffdcd16d7038e8p131bf7jsn9db2d321e354",
+        "X-RapidAPI-Host": "distanceto.p.rapidapi.com",
+      },
+    };
+
+    try {
+      const response = await axios.request(options);
+      console.log(response.data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  if (distanceTraveled === null) {
+    setDistanceTraveled(getDistance("philadelphia", "detroit"));
+  }
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <h1>Travel Point Calculator</h1>
+      {distanceTraveled && (
+        <>
+          <h2>You went this far!</h2>
+          {/* <p>{distanceTraveled[0].distance}</p> */}
+        </>
+      )}
     </div>
   );
-}
+};
 
 export default App;
