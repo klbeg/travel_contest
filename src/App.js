@@ -1,7 +1,10 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
+import { TextField, Button, InputLabel } from "@mui/material";
+import { useForm } from "react-hook-form";
 import axios from "axios";
 
 const App = () => {
+  const { register, handleSubmit, formState } = useForm();
   const [distanceTraveled, setDistanceTraveled] = useState(null);
 
   const getDistance = async (pointA, pointB) => {
@@ -27,23 +30,34 @@ const App = () => {
     }
   };
 
-  const setDistance = async () => {
-    const distance = await getDistance("philadelphia", "detroit");
-    setDistanceTraveled(distance);
-    console.log("distance: ", distance.steps[0].distance.greatCircle);
-  };
+  const setDistance = async (travelPoints) => {
+    const distanceObject = await getDistance(
+      travelPoints.origin,
+      travelPoints.destination
+    );
 
-  if (distanceTraveled === null) {
-    setDistance();
-  }
+    const distance = Math.floor(distanceObject.steps[0].distance.greatCircle);
+
+    setDistanceTraveled(distance);
+  };
 
   return (
     <div className="App">
       <h1>Travel Point Calculator</h1>
+      <section>
+        <h2>Let's get that juicy distance!</h2>
+        <form onSubmit={handleSubmit((data) => setDistance(data))}>
+          <InputLabel>Where did you leave from?</InputLabel>
+          <TextField {...register("origin")} required />
+          <InputLabel>Where you headed?</InputLabel>
+          <TextField {...register("destination")} required />
+          <Button type="submit">Calculate Distance</Button>
+        </form>
+      </section>
       {distanceTraveled && (
         <>
           <h2>You went this far!</h2>
-          <p>{distanceTraveled.steps[0].distance.greatCircle} Km</p>
+          <p>{distanceTraveled} Km</p>
         </>
       )}
     </div>
